@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css?family=Varela+Round');
+
+section {
+  font-family: 'Varela Round', sans-serif !important;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Varela Round', sans-serif !important;
+  text-transform: inherit !important;
+}
+
+ul ul {
+  font-size: 0.75em !important;
+}
+
+minor {
+  color: grey;
+}
+
+minor:before {
+  content: '(';
+}
+
+minor:after {
+  content: ')';
+}
+
+.tinynote {
+  width: 100%;
+  color: grey;
+  font-size: small;
+}
+
+.footnote {
+  width: 100%;
+  text-align: left;
+  color: grey;
+  font-size: medium;
+}
+ 
+
+.no-margin-top {
+  margin-top: 0 !important;
+}
+.no-margin-bottom {
+  margin-bottom: 0 !important;
+}
+
+.mathnote {
+  text-align: left;
+  color: grey;
+  font-size: 0.6em
+}
+
+.twocolumn {
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   grid-gap: 10px;
+   text-align: left;
+}
+
+.threecolumn {
+   display: grid;
+   grid-template-columns: 1fr 1fr 1fr;
+   grid-gap: 10px;
+   text-align: center;
+}
+ 
+.fourcolumn {
+   display: grid;
+   grid-template-columns: 1fr 2fr 2fr 2fr;
+   grid-gap: 10px;
+   text-align: center;
+}
+ 
+.four-by-three {
+   display: grid;
+   grid-template-columns: 1fr 4fr 4fr 4fr;
+   grid-template-rows: 2fr 2fr 2fr;
+   grid-gap: 10px;
+   text-align: center;
+}
+
+.four-by-four {
+   display: grid;
+   grid-template-columns: 1fr 4fr 4fr 4fr;
+   grid-template-rows: 1fr 2fr 2fr 2fr;
+   grid-gap: 10px;
+   text-align: center;
+}
+
+.center {
+  margin: auto;
+}

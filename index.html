@@ -8,33 +8,253 @@
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+		<link rel="stylesheet" href="dist/theme/moon.css">
+                <link rel="stylesheet" href="css/custom.css">
 
 		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+		<link rel="stylesheet" href="plugin/highlight/zenburn.css">
 	</head>
 	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
-		</div>
+        <div class="reveal">
+        <div class="slides">
+            <section>
+                <p>MA Kick-off</p>
+                <h2>Differentiable projection operations for X-ray computed tomography</h2>
+                <p>David Frank, on the 8th February, 2022</p>
+                <aside class="notes">
+                </aside>
+            </section>
+            <section data-auto-animate>
+                <h3>Tomographic Reconstruction</h3>
+                <div class="four-by-four">
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+                    <!-- Row 1 -->
+                    <div> </div>
+                    <div class="center"> <small>Object</small> </div>
+                    <div class="center"> <small>Measurement</small> </div>
+                    <div class="center"> <small>Reconstruction</small> </div>
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			});
-		</script>
-	</body>
+                    <!-- Row 2 -->
+                    <div class="center">
+                        <small>Attenuation CT</small>
+                    </div>
+                    <div>
+                        <img style="display:block;margin: auto;height: 130px; width: auto;" src="imgs/Felsner-001.png">
+                    </div>
+                    <div>
+                        <img style="display:block;margin: auto;height: 130px; width: auto;" src="imgs/Felsner-000.png">
+                    </div>
+                    <div>
+                        <img style="display:block;margin: auto;height: 130px; width: auto;" src="imgs/Felsner-001.png">
+                        <div class="center tinynote">No reconstruction</div>
+                    </div>
+                     
+                    <!-- Row 3 -->
+                    <div class="center">
+                        <small>Phase Contrast CT</small>
+                    </div>
+                    <div>
+                        <img style="display:block;margin: 0 auto;height: 130px; width: auto;" src="imgs/Felsner-003.png">
+                    </div>
+                    <div>
+                        <img style="display:block;margin: 0 auto;height: 130px; width: auto;" src="imgs/Felsner-002.png">
+                    </div>
+                    <div>
+                        <img style="display:block;margin: 0 auto;height: 130px; width: auto;" src="imgs/Felsner-003.png">
+                        <div class="center tinynote">No reconstruction</div>
+                    </div>
+
+                    <!-- Row 4 -->
+                    <div class="center">
+                        <small>Dark-field CT</small>
+                    </div>
+                    <div>
+                        <img data-id="obj" style="display:block;margin: 0 auto;height: 130px; width: auto;" src="./imgs/Modregger-019.png">
+                    </div>
+                    <div>
+                        <img data-id="sino" style="display:block;margin: 0 auto;height: 130px; width: auto;" src="./imgs/Modregger-021.png">
+                    </div>
+                    <div>
+                        <img data-id="recon" style="display:block;margin: 0 auto;height: 130px; width: auto;" src="./imgs/Modregger-023.png">
+                    </div>
+                </div>
+                <div class="footnote">
+                    <ul>
+                        <li>
+                        Images of the first and second row taken form: P. Modregger et al., "Artifacts in X-Ray Dark-Field Tomography" (2011), AIP Conference Proceedings
+                        </li>
+                        <li>
+                        Images of the third row taken form: L. Felsner et al.,
+                        "Phase-Sensitive Region-of-Interest Computed
+                        Tomography" (2018), MICCAI 2018 
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <section data-auto-animate>
+                <h3>Model</h3>
+                <div class="threecolumn">
+                    <div>
+                        <img data-id="obj" style="display:block;margin: 0 auto;height: 256px; width: auto;" src="./imgs/Modregger-019.png">
+                        <div>
+                        \[
+                        f: \Omega \to \mathbb{R}
+                        \]
+                        </div>
+                        <div class="mathnote">
+                            \[
+                            \Omega \subset \mathbb{R}^n
+                            \]
+                        </div>
+                    </div>
+                    <div>
+                        <img data-id="sino" style="display:block;margin: 0 auto;height: 256px; width: auto;" src="./imgs/Modregger-021.png">
+                        <div>
+                            \[
+                            m_j = \mathcal{M_j}(f)
+                            \]
+                        </div>
+                        <div class="mathnote">
+                            \[
+                            \mathcal{M_j}: (\Omega \to \mathbb{R}) \to \mathbb{R}
+                            \]
+                        </div>
+                    </div>
+                    <div>
+                        <img data-id="recon" style="display:block;margin: 0 auto;height: 256px; width: auto;" src="./imgs/Modregger-023.png">
+                        <div>
+                            \[
+                            \hat{f} \approx f
+                            \]
+                        </div>
+                        <div class="mathnote">
+                            \[
+                            \hat{f}(\cdot) = \sum_{i=1}^{I} c_i b(\cdot - x_i)
+                            \]
+                        </div>
+                    </div>
+                </div>
+                <div class="footnote">
+                    Images again from:
+                    P. Modregger et al., "Artifacts in X-Ray Dark-Field Tomography" (2011), AIP Conference Proceedings
+                </div>
+            </section>
+            <section>
+                <h3>Why does the choice of Basis function matter?</h3>
+                <!-- <ul> -->
+                <!--     <li>Support for Phase Contrast CT</li> -->
+                <!--     <li>Increased accuracy</li> -->
+                <!--     <li>Continuous representation of the volume domain</li> -->
+                <!-- </ul> -->
+            </section>
+            <section data-auto-animate>
+                <div>Pixel Basis Functions</div>
+                <div class="twocolumn">
+                    <div>
+                        <!-- <img data-id="sample" style="display:block;margin: 0 auto;height: 400px; width: auto;" src="./imgs/raw_sample_points.png"> -->
+                        <img src="./imgs/pixel.png" data-id="sample" style="display:block;margin: 0 auto;height: 400px; width: auto;" >
+                    </div>
+                    <div>
+                        <!-- <img data-id="approx" style="display:block;margin: 0 auto;height: 400px; width: auto;" src="./imgs/pixel_transformation.png"> -->
+                        <img src="./imgs/ipixel.png" data-id="approx" style="display:block;margin: 0 auto;height: 400px; width: auto;">
+                    </div>
+                </div>
+                <div>
+                    \[
+                    b(x) = 
+                    \begin{cases}
+                    1, & \left\lVert x \right\rVert_{max} < h/2 \\
+                    0, & \text{otherwise}
+                    \end{cases}
+                    \]
+                </div>
+            </section>
+            <section data-auto-animate>
+                <div>B-Spline Basis Functions</div>
+                <div class="twocolumn">
+                    <div>
+                        <img src="./imgs/bsplines.gif" data-id="sample" style="display:block;margin: 0 auto;height: 350px; width: auto;" >
+                    </div>
+                    <div>
+                        <img src="./imgs/ibsplines.gif" data-id="approx" style="display:block;margin: 0 auto;height: 350px; width: auto;" >
+                    </div>
+                </div>
+                <div>
+                    \[
+                    \beta^0(x) =
+                    \begin{cases}
+                    1, & \left\lVert x \right\rVert_{max} < h/2 \\
+                    0, & \text{otherwise}
+                    \end{cases},
+                    \quad
+                    \beta^d(x) = \beta^0 \ast \dots \ast \beta^0(x)
+                    \]
+                </div>
+                <div class="footnote">
+                    Literature: F. Momey et. al, "A new representation and projection model for tomography, based on separable B-splines" (2011),
+                    2011 IEEE Nuclear Science Symposium Conference Record
+                </div>
+            </section>
+            <section data-auto-animate>
+                <div>Spherically Symmetric Basis Functions</div>
+                <div class="twocolumn">
+                    <div>
+                        <!-- <img data-id="sample" style="display:block;margin: 0 auto;height: 400px; width: auto;" src="./imgs/raw_sample_points.png"> -->
+                        <img src="./imgs/blobs.gif" data-id="sample" style="display:block;margin: 0 auto;height: 325px; width: auto;">
+                    </div>
+                    <div>
+                        <img src="./imgs/iblobs.gif" data-id="approx" style="display:block;margin: 0 auto;height: 325px; width: auto;">
+                    </div>
+                </div>
+                <div>
+                    \[
+                    b(r) =
+                    \begin{cases}
+                    \frac{\left(\sqrt{1 - (\frac{r}{a})^2}\right)^m}{I_m(\alpha)} 
+                    I_m\left(\alpha \sqrt{1 - (\frac{r}{a})^2}\right), & 0 \leq r \leq a  \\
+                    0, & \text{otherwise}
+                    \end{cases}
+                    \]
+                </div>
+                <div class="footnote">
+                    Literature: R. M. Lewitt, "Alternatives to voxels for image representation in iterative reconstruction algorithms" (1992),
+                    Phys Med Biol
+                </div>
+            </section>
+            <section>
+                <h3>Timeline</h3>
+                <img src="./imgs/timeline.png" style="display:block;margin: 0 auto;height: auto; width: auto;">
+            </section>
+            <section>
+                <h3>Questions?</h3>
+            </section>
+            <section>
+                <h3>Thanks for listening!</h3>
+                <img src="./imgs/deer-bow.gif">
+            </section>
+        </div>
+        </div>
+        <script src="dist/reveal.js"></script>
+        <script src="plugin/notes/notes.js"></script>
+        <script src="plugin/markdown/markdown.js"></script>
+        <script src="plugin/highlight/highlight.js"></script>
+        <script src="plugin/math/math.js"></script>
+        <script>
+            // More info about initialization & config:
+            // - https://revealjs.com/initialization/
+            // - https://revealjs.com/config/
+            Reveal.initialize({
+                            hash: true,
+
+                            // Learn about plugins: https://revealjs.com/plugins/
+                            plugins: [ RevealMarkdown, RevealHighlight, RevealNotes , RevealMath.KaTeX],
+
+                            dependencies: [
+                                            { src: 'node_modules/reveald3/reveald3.js' }
+                                        ],
+                            width: 1200,
+                            slideNumber: 'c/t'
+                        });
+        </script>
+    </body>
 </html>
