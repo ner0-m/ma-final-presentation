@@ -13,18 +13,6 @@ ul ul {
   font-size: 0.75em !important;
 }
 
-minor {
-  color: grey;
-}
-
-minor:before {
-  content: '(';
-}
-
-minor:after {
-  content: ')';
-}
-
 .tinynote {
   width: 100%;
   color: grey;
@@ -35,7 +23,7 @@ minor:after {
   width: 100%;
   text-align: left;
   color: grey;
-  font-size: medium;
+  font-size: small;
 }
  
 
@@ -83,8 +71,8 @@ minor:after {
 
 .four-by-four {
    display: grid;
-   grid-template-columns: 1fr 4fr 4fr 4fr;
-   grid-template-rows: 1fr 2fr 2fr 2fr;
+   grid-template-columns: 1fr 5fr 5fr 5fr;
+   grid-template-rows: 0.05fr 2fr 2fr 2fr;
    grid-gap: 10px;
    text-align: center;
 }
