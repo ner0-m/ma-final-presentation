@@ -18,16 +18,13 @@
         <div class="reveal">
         <div class="slides">
             <section>
-                <p>MA Kick-off</p>
+                <p>MA Final Presentation</p>
                 <h2>Differentiable projection operations for X-ray computed tomography</h2>
-                <p>David Frank</p> 
+                <p>David Frank</p>
 
-                <p>
-                8th February, 2022
-                <small>
-                    Slides are available at: <a href="https://ner0-m.github.io/ma-kickoff-presentation/">https://ner0-m.github.io/ma-kickoff-presentation/</a>
-                </small>
-                </p>
+                <p>28th April, 2022</p>
+
+                <p><small>Slides are available at: <a href="https://ner0-m.github.io/ma-final-presentation/">https://ner0-m.github.io/ma-kickoff-presentation/</a></small></p>
                 <aside class="notes">
                     <p>
                     Hi, welcome everyone! I'm glad to talk to you about my kickoff-presentation
@@ -41,193 +38,38 @@
                     </p>
                 </aside>
             </section>
-            <section data-auto-animate>
-                <p>Tomographic Reconstruction</p>
-                <div class="four-by-four">
-                    <!-- Row 1 -->
-
-                    <div> </div> 
-                    <div class="center minor"> <small>Object</small> </div>
-                    <div class="center minor"> <small>Measurement</small> </div>
-                    <div class="center minor"> <small>Reconstruction</small> </div>
-
-                    <!-- Row 2 -->
-                    <div class="center">
-                        <small>Attenuation CT</small>
+            <section>
+                <h3>What are projection operations?</h3>
+                <ul>
+                <li>Approximations of the physical forward model.</li>
+                <li>Forward model: Mathematical description of physical capturing process</li>
+                <li>For X-ray attenuation CT: Radon/X-ray Transform</li>
+                </ul>
+                <div class="twocolumn">
+                    <div data-id="box"><img src="./imgs/abdomen_512.png">
+                        <div class="tinynote" style="text-align: center;">Lateral slice of human abdomen</div>
                     </div>
-                    <div>
-                        <img style="display:block;margin: auto;height: 130px; width: auto;" src="imgs/Felsner-001.png">
-                    </div>
-                    <div>
-                        <img style="display:block;margin: auto;height: 130px; width: auto;" src="imgs/Felsner-000.png">
-                    </div>
-                    <div>
-                        <img style="display:block;margin: auto;height: 130px; width: auto;" src="imgs/Felsner-001.png">
-                        <div class="center tinynote">No reconstruction</div>
-                    </div>
-                     
-                    <!-- Row 3 -->
-                    <div class="center">
-                        <small>Phase Contrast CT</small>
-                    </div>
-                    <div>
-                        <img style="display:block;margin: 0 auto;height: 130px; width: auto;" src="imgs/Felsner-003.png">
-                    </div>
-                    <div>
-                        <img style="display:block;margin: 0 auto;height: 130px; width: auto;" src="imgs/Felsner-002.png">
-                    </div>
-                    <div>
-                        <img style="display:block;margin: 0 auto;height: 130px; width: auto;" src="imgs/Felsner-003.png">
-                        <div class="center tinynote">No reconstruction</div>
-                    </div>
-
-                    <!-- Row 4 -->
-                    <div class="center">
-                        <small>Dark-field CT</small>
-                    </div>
-                    <div>
-                        <img data-id="obj" style="display:block;margin: 0 auto;height: 130px; width: auto;" src="./imgs/Modregger-019.png">
-                    </div>
-                    <div>
-                        <img data-id="sino" style="display:block;margin: 0 auto;height: 130px; width: auto;" src="./imgs/Modregger-021.png">
-                    </div>
-                    <div>
-                        <img data-id="recon" style="display:block;margin: 0 auto;height: 130px; width: auto;" src="./imgs/Modregger-023.png">
+                    <div data-id="box">
+                        <img src="./imgs/abdomen_sinogram.png">
+                        <div class="tinynote" style="text-align: center;">Forward projection of such a abdomen phantom</div>
                     </div>
                 </div>
-                <div class="footnote">
-                    <ul>
-                        <li>
-                        Images of first two rows form: 
-                        L. Felsner et al.,
-                        "Phase-Sensitive Region-of-Interest Computed
-                        Tomography" (2018), MICCAI 2018 
-                        </li>
-                        <li>
-
-                        Images of third row form: 
-                        P. Modregger et al., 
-                        "Artifacts in X-Ray Dark-Field Tomography" (2011), 
-                        AIP Conference Proceedings
-                        </li>
-                    </ul>
-                </div>
-                <aside class="notes">
-                    <p>
-                    Let me first talk just a bit about the context of Tomographic reconstruction.
-                    </p>
-
-                    <p>
-                    The goal is to find or reconstruct some object, from which only some measurments
-                    are known.
-                    In this case, I just picked out a couple of popular ones, attenuation
-                    CT, Phase Contrast CT and Dark-field CT.
-                    </p>
-
-                    <p>
-                    So in all cases, you've only got the sinogram in the middle, and try to find
-                    an approximation of the object, which in this case is depicted at the left.
-                    </p>
-
-                </aside>
-            </section>
-            <section data-auto-animate>
-                <h3>Model</h3>
-                <div class="threecolumn">
-                    <div>
-                        <img data-id="obj" style="display:block;margin: 0 auto;height: 256px; width: auto;" src="./imgs/Modregger-019.png">
-                        <div>
-                        \[
-                        f: \Omega \to \mathbb{R}
-                        \]
-                        </div>
-                        <div class="mathnote">
-                            \[
-                            \Omega \subset \mathbb{R}^n
-                            \]
-                        </div>
-                    </div>
-                    <div>
-                        <img data-id="sino" style="display:block;margin: 0 auto;height: 256px; width: auto;" src="./imgs/Modregger-021.png">
-                        <div>
-                            \[
-                            m_j = \mathcal{M_j}(f)
-                            \]
-                        </div>
-                        <div class="mathnote">
-                            \[
-                            \mathcal{M_j}: (\Omega \to \mathbb{R}) \to \mathbb{R}
-                            \]
-                        </div>
-                    </div>
-                    <div>
-                        <img data-id="recon" style="display:block;margin: 0 auto;height: 256px; width: auto;" src="./imgs/Modregger-023.png">
-                        <div>
-                            \[
-                            \hat{f} \approx f
-                            \]
-                        </div>
-                        <div class="mathnote">
-                            \[
-                            \hat{f}(\cdot) = \sum_{i=1}^{I} c_i b(\cdot - x_i)
-                            \]
-                        </div>
-                    </div>
-                </div>
-                <div class="footnote">
-                    Images again from:
-                    P. Modregger et al., "Artifacts in X-Ray Dark-Field Tomography" (2011), AIP Conference Proceedings
-                </div>
-                <aside class="notes">
-                    <p>
-                    Let's take a closer look at the model behind that, and formulate it a little more
-                    mathematical.
-                    </p>
-
-                    <p>
-                    The object, we seek to find, is a function, which maps values from Rn to R.
-                    Usually you have some further assumptions, that it's zero outside a certain
-                    region, and some others.
-                    </p>
-
-                    <p>
-                    A single measurement j, is obtained by applying a physical model M_j to
-                    the unknown function. In the case of attenuation CT, this would for example be
-                    the line integral along the j-th line.
-                    </p>
-
-                    <p>
-                    And as a final step, we try to find some f-hat, which is approximately equal
-                    to the unknown function f.
-                    Mathematically, we want the inverse of M_j such as the filtered back
-                    projection, but in this case we focus on approaches, which use the series expansion
-                    method.
-                    </p>
-
-                    <p>
-                    There we pick a suitable basis (or set of basis functions), such that a
-                    linear combination apprixmates the function adequately. This is
-                    the function at the bottom right.
-                    </p>
-
-                    <p>
-                    The x_i, here is just to  shift any input to the origin, such that
-                    we can assume basis functions to be symmetric and centered around 0.
-                    </p>
-                </aside>
             </section>
             <section>
-                <h3>What do we want from a basis function?</h3>
+                <h3>Why are should the projection operation be differentiable?</h3>
+                <p>Differentiability needed in the forward model of differentiable phase-contrast
+                CT. Without differentiable basis, numerical differentiation is necessary.</p>
+            </section>
+            <section>
+                <h3>On the way to differentiable projection operators</h3>
+            </section>
+            <section>
+                <h3>How are basis functions used</h3>
                 <div>
                     \[
-                    \hat{f}(\cdot) = \sum_{i=1}^{I} c_i b(\cdot - x_i)
+                    f \approx \hat{f}(\cdot) = \sum_{i=1}^{I} c_i b(\cdot - x_i)
                     \]
                 </div>
-                <!-- <ul> -->
-                <!--     <li>Support for Phase Contrast CT</li> -->
-                <!--     <li>Increased accuracy</li> -->
-                <!--     <li>Continuous representation of the volume domain</li> -->
-                <!-- </ul> -->
                 <aside class="notes">
 
                     <p>
@@ -247,168 +89,126 @@
                     </p>
                 </aside>
             </section>
-            <section data-auto-animate>
-                <div>Pixel Basis Functions</div>
-                <div class="twocolumn">
+            <section>
+                <div class="three-by-four">
+                    <!-- Row 1 -->
+
+                    <div> </div>
+                    <div class="center minor"> <small>2D-Basis</small> </div>
+                    <div class="center minor"> <small>Radon Transform</small> </div>
+
+                    <!-- Row 2 -->
+                    <div class="center">
+                        <small>Pixel basis</small>
+                    </div>
+                    <div>
+                        <img src="./imgs/pixel.png" data-id="sample" style="display:block;margin: 0 auto;height: 250px; width: auto;" >
+                    </div>
+                    <div>
+                        <img src="./imgs/ipixel.png" data-id="approx" style="display:block;margin: 0 auto;height: 250px; width: auto;">
+                    </div>
+
+                    <!-- Row 3 -->
+                    <div class="center">
+                        <small>B-Spline basis</small>
+                    </div>
+                    <div>
+                        <img src="./imgs/bsplines.gif" data-id="sample" style="display:block;margin: 0 auto;height: 250px; width: auto;" >
+                        <!-- <img style="display:block;margin: 0 auto;height: 130px; width: auto;" src="imgs/Felsner-003.png"> -->
+                    </div>
+                    <div>
+                        <!-- <img style="display:block;margin: 0 auto;height: 130px; width: auto;" src="imgs/Felsner-002.png"> -->
+                        <img src="./imgs/ibsplines.gif" data-id="approx" style="display:block;margin: 0 auto;height: 250px; width: auto;" >
+                    </div>
+
+                    <!-- Row 4 -->
+                    <div class="center">
+                        <small>Blob basis</small>
+                    </div>
                     <div>
                         <!-- <img data-id="sample" style="display:block;margin: 0 auto;height: 400px; width: auto;" src="./imgs/raw_sample_points.png"> -->
-                        <img src="./imgs/pixel.png" data-id="sample" style="display:block;margin: 0 auto;height: 400px; width: auto;" >
+                        <img src="./imgs/blobs.gif" data-id="sample" style="display:block;margin: 0 auto;height: 250px; width: auto;">
                     </div>
                     <div>
-                        <!-- <img data-id="approx" style="display:block;margin: 0 auto;height: 400px; width: auto;" src="./imgs/pixel_transformation.png"> -->
-                        <img src="./imgs/ipixel.png" data-id="approx" style="display:block;margin: 0 auto;height: 400px; width: auto;">
+                        <img src="./imgs/iblobs.gif" data-id="approx" style="display:block;margin: 0 auto;height: 250px; width: auto;">
                     </div>
                 </div>
-                <div>
-                    \[
-                    b(x) = 
-                    \begin{cases}
-                    1, & \left\lVert x \right\rVert_{max} < h/2 \\
-                    0, & \text{otherwise}
-                    \end{cases}
-                    \]
-                </div>
-                <aside class="notes">
-                    <p>
-                    Let's first look at most likely the most common basis function. 
-                    The pixel basis function. It's defined to be piecewise constant in
-                    a certain region and zero outside.
-                    </p>
-
-                    <p>
-                    On the left, the basis function can be seen
-                    and on the right, the radon transform of the pixel basis function along 3
-                    different direction.
-                    </p>
-                    <p>
-                    Most compact basis function, without any overlap of the grid.
-                    But they suffer from a high anisotropic behaviour, they are also not differentiable.
-                    And suffer in approximation of continuous objects.
-                    </p>
-                </aside>
-            </section>
-            <section data-auto-animate>
-                <div>B-Spline Basis Functions</div>
-                <div class="twocolumn">
-                    <div>
-                        <img src="./imgs/bsplines.gif" data-id="sample" style="display:block;margin: 0 auto;height: 350px; width: auto;" >
-                    </div>
-                    <div>
-                        <img src="./imgs/ibsplines.gif" data-id="approx" style="display:block;margin: 0 auto;height: 350px; width: auto;" >
-                    </div>
-                </div>
-                <div>
-                    \[
-                    \beta^0(x) =
-                    \begin{cases}
-                    1, & \left\lVert x \right\rVert_{max} < h/2 \\
-                    0, & \text{otherwise}
-                    \end{cases},
-                    \quad
-                    \beta^d(x) = \underbrace{\beta^0 \ast \dots \ast \beta^0}_{d+1\text{ terms}}(x)
-                    \]
-                </div>
-                <div class="footnote">
-                    Literature: F. Momey et. al, "A new representation and projection model for tomography, based on separable B-splines" (2011),
-                    2011 IEEE Nuclear Science Symposium Conference Record
-                </div>
-                <aside class="notes">
-                    <p>
-                    </p>
-                    <p>
-                    B-Splines can be seen as a generalization of the pixel basis function
-                    The zero-th order B-Spline is just the pixel basis function.
-                    But by a d+1 convolution of the basis function, one generates smoother and
-                    smoother basis functions.
-                    </p>
-                    <p>
-                    They are spearable, i.e. a 2 dimensional B-Spline is just the multiplication
-                    of 2 1-dimensional B-Splines.
-                    There exists a closed form solution to approximate a function, and is found to
-                    be quite effective and efficient.
-                    </p>
-                    <p>
-                    Specifically B-Splines of order 3 are members of the maximum order minimum
-                    support functions, which gives them a kind of optimality in this sense.
-                    </p>
-                </aside>
-            </section>
-            <section data-auto-animate>
-                <div>Kaiser-Bessel basis functions</div>
-                <div class="twocolumn">
-                    <div>
-                        <!-- <img data-id="sample" style="display:block;margin: 0 auto;height: 400px; width: auto;" src="./imgs/raw_sample_points.png"> -->
-                        <img src="./imgs/blobs.gif" data-id="sample" style="display:block;margin: 0 auto;height: 325px; width: auto;">
-                    </div>
-                    <div>
-                        <img src="./imgs/iblobs.gif" data-id="approx" style="display:block;margin: 0 auto;height: 325px; width: auto;">
-                    </div>
-                </div>
-                <div>
-                    \[
-                    b(r) =
-                    \begin{cases}
-                    \frac{\left(\sqrt{1 - (\frac{r}{a})^2}\right)^m}{I_m(\alpha)} 
-                    I_m\left(\alpha \sqrt{1 - (\frac{r}{a})^2}\right), & 0 \leq r \leq a  \\
-                    0, & \text{otherwise}
-                    \end{cases}
-                    \]
-                </div>
-                <div class="footnote">
-                    Literature: R. M. Lewitt, "Alternatives to voxels for image representation in iterative reconstruction algorithms" (1992),
-                    Phys Med Biol
-                </div>
-                <aside class="notes">
-                    <p>
-                    The generalized Kaiser-Bessel basis function is a spherically symmetric basis 
-                    function, with local support.
-                    </p>
-
-                    <p>
-                    It's defined by 3 values, 
-                    <ul>
-                        <li> a the radius or support size of the blob.</li>
-                        <li> alpha controls the smoothness, or roll-off. Smaller values tent do wider
-                            shapes.</li>
-                        <li> m the order, defines the continuity.</li>
-                    </ul>
-                    </p>
-
-                    <p>
-                    The radon transform of blob basis function has a closed form solution. And 
-                    due to the spherical nature of the basis function, is invariant to the
-                    orientation. All projections of different angles, defines exactly the same line
-                    as can be seen in the right GIF.
-                    </p>
-
-                </aside>
             </section>
             <section>
-                <h3>Timeline</h3>
-                <img src="./imgs/timeline.png" style="display:block;margin: 0 auto;height: auto; width: auto;">
-                <aside class="notes">
-                    <p>
-                    As of when to do what.
-                    </p>
-                    <p>
-                    I'm close to finishing the implementation of the blob-basis functions.
-                    And also quite close with a prototype of the projection, I'm planing to use.
-                    The projector still needs some time, but as soon as the blob functions are 
-                    ready, I'll tackle that one until that works nicely.
-                    </p>
-                    <p>
-                    Once the projector works with Blobs, I'll make it work with B-Splines, which
-                    shouldn't be to much work (fingers crossed!)
-                    Last, I've still got to write the thesis.
-                    </p>
-                </aside>
+                <h3>Implementation of projection operators</h3>
+            </section>
+            <section data-auto-animate>
+                <h3>Classical Ray-driven approach for pixel basis</h3>
+                <div data-id="box"><img src="./imgs/siddon_traversal.png"></div>
+            </section>
+            <section data-auto-animate>
+                <h3>Ray-driven approach for B-Spline and Blob basis</h3>
+                <div data-id="box"><img src="./imgs/slice_traversal_clean.png"></div>
+            </section>
+            <section data-auto-animate>
+                <h3>Ray-driven approach for B-Spline and Blob basis</h3>
+                <div data-id="box"><img src="./imgs/slice_traversal.png"></div>
+            </section>
+            <section>
+                <h3>Quality overview</h3>
+                <div class="threecolumn">
+                    <div><small>Blob projector</small></div>
+                    <div><small>B-Spline projector</small></div>
+                    <div><small>Siddon's projector</small></div>
+                </div>
+                <div class="threecolumn">
+                    <div><img src="./imgs/2dreconstruction_windowed_Blob.png"></div>
+                    <div><img src="./imgs/2dreconstruction_windowed_BSpline.png"></div>
+                    <div><img src="./imgs/2dreconstruction_windowed_Siddon.png"></div>
+                </div>
+                <div class="threecolumn">
+                    <div><img src="./imgs/2dreconstruction_cropped_windowed_Blob.png"></div>
+                    <div><img src="./imgs/2dreconstruction_cropped_windowed_BSpline.png"></div>
+                    <div><img src="./imgs/2dreconstruction_cropped_windowed_Siddon.png"></div>
+                </div>
+            </section>
+            <section data-auto-animate>
+                <h3>2D Performance overview</h3>
+                 <table data-id="perf-table">
+                  <tr>
+                    <td colspan="3" style="text-align: center;">Projectors</td>
+                  </tr>
+                  <tr>
+                    <td>Siddon's </td>
+                    <td>Cubic B-Spline &darr;</td>
+                    <td>Blob &darr;</td>
+                  </tr>
+                  <tr>
+                    <td>1.0</td>
+                    <td>6.58</td>
+                    <td>6.45</td>
+                  </tr>
+                </table>
+            </section>
+            <section data-auto-animate>
+                <h3>3D Performance overview</h3>
+                 <table data-id="perf-table">
+                  <tr>
+                    <td colspan="3" style="text-align: center;">Projectors</td>
+                  </tr>
+                  <tr>
+                    <td>Siddon's </td>
+                    <td>Cubic B-Spline &darr;</td>
+                    <td>Blob &darr;</td>
+                  </tr>
+                  <tr>
+                    <td>1.0</td>
+                    <td>22.7</td>
+                    <td>22.4</td>
+                  </tr>
+                </table>
             </section>
             <section>
                 <h3>Questions?</h3>
             </section>
             <section>
                 <h3>Thanks for listening!</h3>
-                <img src="./imgs/deer-bow.gif">
+                <img src="./imgs/michael-scott-the-office.gif">
             </section>
         </div>
         </div>

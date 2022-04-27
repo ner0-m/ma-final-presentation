@@ -69,6 +69,14 @@ ul ul {
    text-align: center;
 }
 
+.three-by-four {
+   display: grid;
+   grid-template-columns: 1fr 5fr 5fr;
+   grid-template-rows: 0.001fr 1fr 1fr;
+   grid-gap: 10px;
+   text-align: center;
+}
+
 .four-by-four {
    display: grid;
    grid-template-columns: 1fr 5fr 5fr 5fr;
