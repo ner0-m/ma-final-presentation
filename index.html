@@ -24,17 +24,29 @@
 
                 <p>28th April, 2022</p>
 
-                <p><small>Slides are available at: <a href="https://ner0-m.github.io/ma-final-presentation/">https://ner0-m.github.io/ma-kickoff-presentation/</a></small></p>
+                <p><small>Slides are available at: <a href="https://ner0-m.github.io/ma-final-presentation/">https://ner0-m.github.io/ma-final-presentation/</a></small></p>
                 <aside class="notes">
                     <p>
-                    Hi, welcome everyone! I'm glad to talk to you about my kickoff-presentation
-                    for my Masterthesis: "Differentiable projection operations
-                    for X-ray computed tomography"
+                    Hi, welcome everyone to my final presentation for my master's thesis
+                    "differentiable projection operations for X-ray computed tomography"
                     </p>
 
                     <p>
-                    You can find the slides, at least for some time, on the github.io link presented below.
-                    I also copied that in the chat, just if you want to take a closer look at anything.
+                    You can find the slides, on the github.io link here below. I also copied that in
+                    the chat, just if you want to take a closer look at anything.
+                    </p>
+
+                    <p>
+                    I'm going to talk about what projection operations are, specifically, in the
+                    context of X-ray CT. Then I'll try to motivate the importance of
+                    differentiability, and finally, I'll dive a little deeper on the implementation
+                    of projection operations. I'm not going to cover X-ray CT completely, but I'll
+                    try to cover some basics, so everyone can follow.
+                    </p>
+
+                    <p>
+                    If anything is unclear, just interrupt me and ask right away, or ask me at the
+                    end to go over it again.
                     </p>
                 </aside>
             </section>
@@ -54,38 +66,105 @@
                         <div class="tinynote" style="text-align: center;">Forward projection of such a abdomen phantom</div>
                     </div>
                 </div>
+                <aside class="notes">
+                    <p>
+                    In short, projection operations, or operators are approximations of the physical
+                    forward model. The forward model is the mathematical description of the
+                    capturing process.
+                    </p>
+                    <p>
+                    This capturing process for X-ray attenuation CT, is illustrated with the bottom
+                    pictures. If one use a CT scanner to measure the abdomen depicted on the left,
+                    one would get the measurements on the right. Now the forward model, is the
+                    description of this process. For X-ray CT, this boils down to the so called line
+                    integral.
+                    </p>
+                    <p>
+                    But do note, that the picture on the left, is not measurable, it is only
+                    reconstructable from the measured data.
+                    </p>
+                    <p>
+                    So just remember, projection operations are just the approximation of this
+                    mathematical description of the measuring process.
+                    </p>
+                </aside>
             </section>
             <section>
                 <h3>Why are should the projection operation be differentiable?</h3>
                 <p>Differentiability needed in the forward model of differentiable phase-contrast
                 CT. Without differentiable basis, numerical differentiation is necessary.</p>
+                <aside class="notes">
+                    <p>
+                    So, when does it matter, that the projection operations are differentiable?
+                    </p>
+                    <p>
+                    First, in the continuous setting this is not a problem. This only happens,
+                    due to the discretization of the problem, such that one can use computers to
+                    work with it. So, by taking the naive approximation, one gets projection
+                    operations, which are not differentiable.
+                    </p>
+                    <p>
+                    For the approximation of something like X-ray attenuation CT, this doesn't
+                    necessarily matter. Differentiability is not part of the physical measuring
+                    process.
+                    </p>
+                    <p>
+                    However, for imaging modalities based on differentiable phase-contrast, this is
+                    the case. Without going into details of it, but as the name suggests,
+                    differentiation is important there. And to support such imaging modalities, one
+                    needs either, differentiable projection operations, or an additional numerical
+                    differentiation step. The latter is not optimal, so a good description and
+                    approximation of the measurement process is desirable.
+                    </p>
+                </aside>
             </section>
             <section>
                 <h3>On the way to differentiable projection operators</h3>
+                <aside class="notes">
+                    <p>
+                    I already mentioned, that adding differentiability back into the projection
+                    operations is only necessary, as the often chosen discretization, is not
+                    differentiable.
+                    </p>
+                    <p>
+                    So, we'll briefly look into how a signal can be discretized.
+                    </p>
+                </aside>
             </section>
-            <section>
-                <h3>How are basis functions used</h3>
+            <section data-auto-animate>
+                <h3>Discretization using series expansion</h3>
                 <div>
                     \[
-                    f \approx \hat{f}(\cdot) = \sum_{i=1}^{I} c_i b(\cdot - x_i)
+                    f \approx \hat{f}(\cdot) = \sum_{i=1}^{I} c_i b(\cdot - x_i) = \sum_{i=1}^{I}
+                    c_i b_i(\cdot)
                     \]
                 </div>
                 <aside class="notes">
-
                     <p>
-                    With this approach the influence of the basis function is obviously big.
-                    So what do we care about in a basis function?
+                    A common method for discretization is the so-called series expansion. One
+                    approximates the signal 'f', by a linear combination of a coefficient vector
+                    'c' and a zero-centered symmetrical basis function 'b'. The 'x_i' denotes
+                    the center of the 'i'th grid point of the discretization, and hence, shifts
+                    everything over to use the zero-center basis function.
                     </p>
-
-                    <ul>
-                        <li> Accurate,</li>
-                        <li> Fast to compute</li>
-                        <li> Easy to handle</li>
-                        <li> Differentiable</li>
-                    </ul>
-
+                </aside>
+            </section>
+            <section data-auto-animate>
+                <h3>Discretization using series expansion</h3>
+                <div>
+                    \[
+                    A(\hat{f}) = \sum_{i=1}^{I} c_i A(b_i)
+                    \]
+                </div>
+                <aside class="notes">
                     <p>
-                    The later is specifically important, to support Phase-Contrast CT in the future.
+                    Worth mentioning here is, that if one applies a linear operator to the series
+                    expansion, as it can be seen here. It only acts on the basis function. Hence, if
+                    one applies the derivative operator for example, as long as the basis function is
+                    differentiable, this works out fine.
+                    </p>
+                    <p>
+                    So what are common or good choices for such basis functions?
                     </p>
                 </aside>
             </section>
@@ -133,27 +212,194 @@
                         <img src="./imgs/iblobs.gif" data-id="approx" style="display:block;margin: 0 auto;height: 250px; width: auto;">
                     </div>
                 </div>
+                <aside class="notes">
+                    <p>
+                    So quite a lot is going on here. First focus on the left column.
+                    </p>
+                    <p>
+                    From top to bottom, three basis functions are shown, the pixel basis function,
+                    the B-Spline basis function of different orders, and the blob basis function for
+                    a couple of different parameters.
+                    </p>
+                    <p>
+                    The pixel basis function is super common and ubiquitous. It's used everywhere.
+                    It is a piecewise linear function and not differentiable at the boundaries. It's
+                    the default basis function for pretty much everything.
+                    </p>
+                    <p>
+                    Beneath, is the B-Spline basis, a generalization of the pixel basis. The
+                    B-Spline of order 'd' is defined as the 'd+1' time convolution of the pixel
+                    basis function with itself. The basis function tents quite quickly to a Gaussian
+                    bell, however the support remains compact. The support is larger though than for
+                    the pixel basis for orders larger than 0.
+                    </p>
+                    <p>
+                    Lastly, at the bottom, the blob basis function is a spherically-symmetric basis
+                    function, which means all cross-sections going through the center of the blob,
+                    are the same. It is parameterised by 'a' the radius, 'm' controlling the
+                    differentiablilty, and 'alpha' controlling the roll-off, or taper.
+                    </p>
+
+                    <p>
+                    So why are these basis functions interesting? Both B-Splines and Blobs are known
+                    to provide better accuracy compared to pixel basis function in many different
+                    applications. But here, we focus on the implications of the forward model for
+                    X-ray attenuation CT, which is seen in the right column.
+                    </p>
+
+                    <p>
+                    This is just the Radon Transform. This means, imagine a X-ray source on one side
+                    of the basis function emitting parallel X-rays and a detector on the other. This
+                    is a single projection. This can be rotated around to give multiple projections
+                    at different projection angles. The different curves shown in the right
+                    column, show the intensity of the X-ray shadow for three different projection
+                    angles. That is, the higher the curve, the darker the shadow is. Or differently,
+                    the higher the curve, the more energy was absorbed or attenuation of the X-ray
+                    traversing the basis function.
+                    </p>
+                    <p>
+                    What is to point out here, is mostly the pixel basis function depends highly on
+                    the projection angle, so which direction the X-rays travel through the basis
+                    function.
+                    </p>
+
+                    <p>
+                    For blobs, at the bottom right this does not matter at all, as they have the
+                    same Radon Transform for all projection angles.
+                    </p>
+                    <p>
+                    B-Splines are the in-between. The higher the order, the closer the Radon
+                    Transform gets to be independent of the projection angle. Already cubic
+                    B-Splines are quite close to be spherically-symmetric.
+                    </p>
+                    <p>
+                    As a last point for this slide, using B-Spline or Blob basis functions as a
+                    discretization in the series expansion yields differentiable projection
+                    operations. Under the assumptions, that parameters are chosen correctly.
+                    </p>
+                </aside>
             </section>
             <section>
                 <h3>Implementation of projection operators</h3>
+                <aside class="notes">
+                    <p>
+                    With that lengthy part out of the way. Let's look at first at a classical
+                    approach to implement such a projection operations for X-ray CT. And then follow
+                    it up with the approach taken in my thesis for B-Spline and blob basis functions.
+                    </p>
+                </aside>
+            </section>
+            <section data-auto-animate>
+                <h3>Classical Ray-driven approach for pixel basis</h3>
+                <div data-id="box"><img src="./imgs/traversal_weights_scaled.png"></div>
+                <aside class="notes">
+                    <p>
+                    What you see here is a simplified version of a typical X-ray CT setup. You have a
+                    source one side, the detector on the other side and in between the image one
+                    wants to scan. The image is discretized using a regular grid with a value in
+                    the center of each grid cell. Here, the pixel basis function is additionally
+                    depicted.
+                    </p>
+                    <p>
+                    For simplicity, we only consider one single ray, but you have to imagine that
+                    this is done for many rays for each projection, with many different projection
+                    angles.
+                    </p>
+                    <p>
+                    Now, the task of projection operations or often referred to as projectors is to
+                    calculate the values of the 'a's. These are the contributions of a single ray to
+                    the measurement, in this case 'm_1'.
+                    </p>
+                    <p>
+                    So how can this be calculated?
+                    </p>
+                </aside>
             </section>
             <section data-auto-animate>
                 <h3>Classical Ray-driven approach for pixel basis</h3>
                 <div data-id="box"><img src="./imgs/siddon_traversal.png"></div>
+                <aside class="notes">
+                    <p>
+                    For the pixel basis function, one can take the intersection length of the ray
+                    and an individual pixel. This works as the pixel has a constant value inside.
+                    </p>
+                    <p>
+                    With that the values written here in the blue pixels, are the weights calculated
+                    by such a method. In this case, this method is usually referred to as Siddon's
+                    method.
+                    </p>
+                    <p>
+                    Note here, that pixels where the ray traverse through a larger distance have a
+                    larger contribution. And if only the border is hit, the contribution is less.
+                    All pixels which are white, have a contribution of zero.
+                    </p>
+                    <p>
+                    To extent this basic principle to B-Splines and Blobs, some difficulties arise,
+                    one need to deal with. Both basis functions usually have a support which is
+                    larger than that of a pixel, plus it's overlapping. Further, the basis functions
+                    are not constant anymore, so the naive intersection length doesn't help anymore.
+                    </p>
+                </aside>
             </section>
             <section data-auto-animate>
                 <h3>Ray-driven approach for B-Spline and Blob basis</h3>
                 <div data-id="box"><img src="./imgs/slice_traversal_clean.png"></div>
+                <aside class="notes">
+                    <p>
+                    The larger and overlapping support is dealt with by just visiting neighbouring
+                    pixels. Here, basis functions of radius one are assumed, but usually they are
+                    larger than that. Pixels perpendicular to the main ray direction are visited.
+                    The darker blue ones, are always the center pixels visited, and the lighter ones
+                    the additionally visited ones.
+                    </p>
+                    <p>
+                    Instead of the naive intersection length, one can pre calculate the contribution
+                    of a basis function to a ray, given it's distance from the center of the basis.
+                    For blobs, an equation exists for that, which can be easily implemented, for
+                    B-Spline a slight trick is used. Basically, it is assumed all rays traverse the
+                    B-Spline at a zero degree projection angle. This works, due to the close
+                    approximation of a spherically-symmetric basis function.
+                    </p>
+                    <p>
+                    So once, one has these pre calculated contributions, one can just take the
+                    perpendicular distance, depicted as dashed black lines, of a center of the basis
+                    functions to the ray, and use that to look up the contributions values.
+                    </p>
+                    <p>
+                    Note this approach, works for all basis functions, which are at least close to
+                    spherically symmetric and hence not depend on the projection angle.
+                    </p>
+                </aside>
             </section>
             <section data-auto-animate>
                 <h3>Ray-driven approach for B-Spline and Blob basis</h3>
                 <div data-id="box"><img src="./imgs/slice_traversal.png"></div>
+                <aside class="notes">
+                    <p>
+                    Lastly, this has to be done obviously for the complete image. And here it is
+                    depicted to see how many pixels the algorithm visits for a basis with radius 1.
+                    </p>
+                    <p>
+                    But for a basis radius of 2, at each slice, one needs to visit in total 5
+                    pixels in 2D, and in 3D this number goes up to 25 voxels, which is quite quite
+                    a lot.
+                    </p>
+                </aside>
+            </section>
+            <section>
+                <h3>Results</h3>
+                <aside class="notes">
+                    <p>
+                    I want to quickly go over some qualitative and performance results. Let's start
+                    with the qualitative ones.
+                    </p>
+                </aside>
             </section>
             <section>
                 <h3>Quality overview</h3>
                 <div class="threecolumn">
-                    <div><small>Blob projector</small></div>
-                    <div><small>B-Spline projector</small></div>
+                    <div><small>Blob projector*</small></div>
+                    <div><small>B-Spline projector*</small></div>
                     <div><small>Siddon's projector</small></div>
                 </div>
                 <div class="threecolumn">
@@ -166,6 +412,27 @@
                     <div><img src="./imgs/2dreconstruction_cropped_windowed_BSpline.png"></div>
                     <div><img src="./imgs/2dreconstruction_cropped_windowed_Siddon.png"></div>
                 </div>
+                <div class="footnote">
+                    <div class="center tinynote">
+                        * Blob projector uses \(a=2\), \(m=2\), \(\alpha=10.83\) as parameters, and cubic B-Splines
+                        (i.e. \(d = 3\)) are used.
+                    </div>
+                </div>
+                <aside class="notes">
+                    <p>
+                    Here, a reconstruction was performed, using the Shepp-Logan phantom in 2D, a
+                    basic setup with a 180 degree circular trajectory was used with FISTA as a
+                    reconstruction algorithm. For the projector using Blobs, the radius was 2, and
+                    cubic B-Splines are used.
+                    </p>
+                    <p>
+                    The reconstruction on the right, is the Siddon's projector, that uses the pixel
+                    basis and approximates the forward model using the intersection lengths. And
+                    compared to that, both new projectors do quite well. The Siddon's projector is
+                    known for its high frequency artifacts, and both new projectors, don't exhibit
+                    such artifacts in most cases, due to their larger footprint.
+                    </p>
+                </aside>
             </section>
             <section data-auto-animate>
                 <h3>2D Performance overview</h3>
@@ -184,6 +451,13 @@
                     <td>6.45</td>
                   </tr>
                 </table>
+                <aside class="notes">
+                    <p>
+                    But, looking at the computational burden, this accuracy comes at a cost. Both
+                    methods are around 6 to 7 times slower than the Siddon's approach. Which for 2D
+                    is still fine, but this only grows for 3D to.
+                    </p>
+                </aside>
             </section>
             <section data-auto-animate>
                 <h3>3D Performance overview</h3>
@@ -202,9 +476,21 @@
                     <td>22.4</td>
                   </tr>
                 </table>
+                <aside class="notes">
+                    <p>
+                    A penalty of 22 to 23 times slower. Which is a just due to the shear number
+                    of voxel that need to be visited for each and every ray traversing the volume.
+                    </p>
+                </aside>
             </section>
             <section>
                 <h3>Questions?</h3>
+                <aside class="notes">
+                    <p>
+                    With that, I'm done with my presentation, and if you have any questions, feel
+                    free to ask in the chat or just hit me with it!
+                    </p>
+                </aside>
             </section>
             <section>
                 <h3>Thanks for listening!</h3>
